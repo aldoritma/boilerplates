@@ -1,0 +1,18 @@
+{
+  "name": "dub-machine",
+  "authors": [
+    "Aldo Ariandhika <aldoariandhika@gmail.com>"
+  ],
+  "description": "a dubbing machine for telkmsel activity",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "build/vendor",
+    "test",
+    "tests"
+  ]
+}
