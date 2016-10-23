@@ -33,9 +33,21 @@ Install_susy()
   echo "@import "../vendor/susy/sass/susy"; " > $BUILDDIR/scss/application.scss
 }
 
+Create_files()
+{
+  if [ "$1" == "sass" ]; then
+    touch $BUILDDIR/scss/{application,_variables}.scss $BUILDDIR/scripts/init.js
+    touch $BUILDDIR/scss/**/.gitkeep $BUILDDIR/scripts/**/.gitkeep
+    touch $DISTDIR/**/.gitkeep
+  else
+    touch assets/css/stylesheets.css assets/scripts/init.js
+  fi
+}
+
 Create_boilerplates()
 {
   mkdir $projectname
+  cd $projectname
   touch .gitignore
   echo ".DS_STORE" > .gitignore
   echo ".codekit-cache/" > .gitignore
@@ -47,7 +59,7 @@ Create_boilerplates()
   _EOF_
 
 
-  if [ "$1" == "sass" ] || [ "$1" == "less" ]  ; then
+  if [ "$1" == "sass" ] ; then
     mkdir $BUILDDIR $DISTDIR
     mkdir $BUILDDIR/scss/{generic,components,extensions,objects,tools} $BUILDDIR/scripts/{plugins,modules,libraries}  $BUILDDIR/views/{organisms,pages,layouts,partials}
     mkdir $DISTDIR/assets/{css,scripts,images,fonts}
@@ -99,10 +111,6 @@ do
             PREPROS=$opt
             break
             ;;
-        "less")
-            PREPROS=$opt
-            break
-            ;;
         "vanilla")
             PREPROS=$opt
             break
@@ -118,7 +126,7 @@ echo "What Frameworks do you want to use: "
 PS3="Answer: "
 framework=("bootstrap" "foundation" "none")
 
-if []
+
 select opt in "${framework[@]}"
 do
     case $opt in
@@ -143,5 +151,6 @@ do
         ;;
     esac
 done
-#
-# Create_directory $PREPROS
+
+Create_boilerplates $PREPROS
+Create_files $PREPROS
