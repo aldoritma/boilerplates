@@ -15,7 +15,6 @@ Install_bootsrap()
   echo "@import "../bootstrap/bootstrap"; " > $BUILDDIR/scss/vendor.scss
   rsync -az $BUILDDIR/vendor/bootstrap-sass/assets/javascripts/bootstrap.js $BUILDDIR/scripts/modules/bootstrap.js
   rsync -az $BUILDDIR/vendor/bootstrap-sass/assets/fonts/ dist/assets/fonts/
-
 }
 
 Install_foundation()
@@ -44,21 +43,12 @@ EOF
 }
 
 
-Create_files()
-{
-  if [ "$1" == "sass" ]; then
-    touch $BUILDDIR/scss/{application,_variables}.scss $BUILDDIR/scripts/init.js
-    touch $BUILDDIR/scss/**/.gitkeep $BUILDDIR/scripts/**/.gitkeep
-    touch $DISTDIR/**/.gitkeep
-  else
-    touch assets/css/stylesheets.css assets/scripts/init.js
-  fi
-}
+
 
 Create_boilerplates()
 {
-  mkdir $projectname
-  cd $projectname
+  mkdir $1
+  cd $1
   touch .gitignore
   echo ".DS_STORE" > .gitignore
   echo ".codekit-cache/" > .gitignore
@@ -66,30 +56,30 @@ Create_boilerplates()
   bowerrc
 
 
-  if [ "$1" == "sass" ] ; then
+  if [ "$2" == "sass" ] ; then
     mkdir $BUILDDIR $DISTDIR
-    mkdir $BUILDDIR/scss/{generic,components,extensions,objects,tools} $BUILDDIR/scripts/{plugins,modules,libraries}  $BUILDDIR/views/{organisms,pages,layouts,partials}
-    mkdir $DISTDIR/assets/{css,scripts,images,fonts}
+    mkdir -p  $BUILDDIR/scss/{generic,components,extensions,objects,tools} $BUILDDIR/scripts/{plugins,modules,libraries}  $BUILDDIR/views/{organisms,pages,layouts,partials}
+    mkdir -p $DISTDIR/assets/{css,scripts,images,fonts}
 
     # installing frameworks
-    case $1 in
-      "bootstrap")
-        Install_bootsrap
-        ;;
-      "foundation")
-        Install_foundation
-        ;;
-      "susy")
-        Install_susy
-        ;;
-      *)
-        break
-        ;;
-    esac
+    # case $3 in
+    #   "bootstrap")
+    #     Install_bootsrap
+    #     ;;
+    #   "foundation")
+    #     Install_foundation
+    #     ;;
+    #   "susy")
+    #     Install_susy
+    #     ;;
+    #   *)
+    #     break
+    #     ;;
+    # esac
 
     touch $BUILDDIR/scss/application.scss
     touch $BUILDDIR/scss/_variables.scss
-    touch $BUILDDIR/scss/**/.gitkeep
+    find  $BUILDDIR/scss -type d -exec touch  {}/.gitkeep \;
 
     else
     mkdir assets/{css,scripts,images,fonts}
@@ -128,6 +118,7 @@ do
 done
 
 
+
 echo "What Frameworks do you want to use: "
 PS3="Answer: "
 framework=("bootstrap" "foundation" "none")
@@ -156,5 +147,6 @@ do
     esac
 done
 
-Create_boilerplates $PREPROS
-Create_files $PREPROS
+
+
+Create_boilerplates $projectname $PREPROS $FRAMEWORKS
