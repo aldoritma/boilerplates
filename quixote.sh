@@ -90,7 +90,8 @@ Create_boilerplates()
     find  $DISTDIR/assets/ -type d -exec touch  {}/.gitkeep \;
 
     else
-    mkdir assets/{css,scripts,images,fonts}
+    mkdir -p assets/{css,scripts,images,fonts}
+    find  assets/ -type d -exec touch  {}/.gitkeep \;
   fi
 }
 
