@@ -3,8 +3,16 @@
 #
 
 
+
 BUILDDIR="build"
 DISTDIR="dist"
+
+Initial_commit()
+{
+  git init
+  git add .
+  git commit -m "initial commit"
+}
 
 Install_bootsrap()
 {
@@ -14,7 +22,6 @@ Install_bootsrap()
   echo "@import "../bootstrap/bootstrap"; " > $BUILDDIR/scss/vendor.scss
   rsync -az $BUILDDIR/vendor/bootstrap-sass/assets/javascripts/bootstrap.js $BUILDDIR/scripts/modules/bootstrap.js
   rsync -az $BUILDDIR/vendor/bootstrap-sass/assets/fonts/ dist/assets/fonts/
-
 }
 
 Install_foundation()
@@ -33,27 +40,36 @@ Install_susy()
   echo "@import "../vendor/susy/sass/susy"; " > $BUILDDIR/scss/application.scss
 }
 
+bowerrc()
+{
+cat <<EOF >> .bowerrc
+{
+  "directory" : "build/vendor"
+}
+EOF
+}
+
+
+
+
 Create_boilerplates()
 {
-  mkdir $projectname
+  mkdir $1
+  cd $1
   touch .gitignore
   echo ".DS_STORE" > .gitignore
   echo ".codekit-cache/" > .gitignore
   echo $'*.zip\n*.rar\n*.tar.gz\n*.sass-cache' > .gitignore
-  cat <<- _EOF_ ->> .bowerrc
-  {
-    "directory" : "build/vendor"
-  }
-  _EOF_
+  bowerrc
 
 
-  if [ "$1" == "sass" ] || [ "$1" == "less" ]  ; then
+  if [ "$2" == "sass" ] ; then
     mkdir $BUILDDIR $DISTDIR
-    mkdir $BUILDDIR/scss/{generic,components,extensions,objects,tools} $BUILDDIR/scripts/{plugins,modules,libraries}  $BUILDDIR/views/{organisms,pages,layouts,partials}
-    mkdir $DISTDIR/assets/{css,scripts,images,fonts}
+    mkdir -p  $BUILDDIR/scss/{generic,components,extensions,objects,tools} $BUILDDIR/scripts/{plugins,modules,libraries}  $BUILDDIR/views/{organisms,pages,layouts,partials}
+    mkdir -p $DISTDIR/assets/{css,scripts,images,fonts}
 
     # installing frameworks
-    case $1 in
+    case $3 in
       "bootstrap")
         Install_bootsrap
         ;;
@@ -70,11 +86,12 @@ Create_boilerplates()
 
     touch $BUILDDIR/scss/application.scss
     touch $BUILDDIR/scss/_variables.scss
-    touch $BUILDDIR/scss/**/.gitkeep
+    find  $BUILDDIR/{scss,scripts,views} -type d -exec touch  {}/.gitkeep \;
+    find  $DISTDIR/assets/ -type d -exec touch  {}/.gitkeep \;
 
     else
-
-      mkdir assets/{css,scripts,images,fonts}
+    mkdir -p assets/{css,scripts,images,fonts}
+    find  assets/ -type d -exec touch  {}/.gitkeep \;
   fi
 }
 
@@ -91,15 +108,11 @@ read -p "Your Projectname: " projectname
 
 echo "What CSS Pre-Pros do you want to use: "
 PS3="Answer: "
-cssprepros=("sass" "less" "vanilla")
+cssprepros=("sass" "vanilla")
 select opt in "${cssprepros[@]}"
 do
     case $opt in
         "sass")
-            PREPROS=$opt
-            break
-            ;;
-        "less")
             PREPROS=$opt
             break
             ;;
@@ -114,34 +127,37 @@ do
 done
 
 
-echo "What Frameworks do you want to use: "
-PS3="Answer: "
-framework=("bootstrap" "foundation" "none")
+if [ "$PREPROS" == "sass" ]; then
+  echo "What Frameworks do you want to use: "
+  PS3="Answer: "
+  framework=("bootstrap" "foundation" "susy" "none")
+  select opt in "${framework[@]}"
+  do
+      case $opt in
+          "bootstrap")
+              FRAMEWORKS=$opt
+              break
+              ;;
+          "foundation")
+              FRAMEWORKS=$opt
+              break
+              ;;
+          "susy")
+              FRAMEWORKS=$opt
+              break
+              ;;
+          "none")
+              FRAMEWORKS=$opt
+              break
+              ;;
+          *)
+            echo "Please choose the options"
+            ;;
+      esac
+  done
+fi
 
-if []
-select opt in "${framework[@]}"
-do
-    case $opt in
-        "bootstrap")
-            FRAMEWORKS=$opt
-            break
-            ;;
-        "foundation")
-            FRAMEWORKS=$opt
-            break
-            ;;
-        "susy")
-            FRAMEWORKS=$opt
-            break
-            ;;
-        "none")
-            FRAMEWORKS=$opt
-            break
-            ;;
-        *)
-          echo "Please choose the options"
-        ;;
-    esac
-done
-#
-# Create_directory $PREPROS
+
+
+Create_boilerplates $projectname $PREPROS $FRAMEWORKS
+Initial_commit
