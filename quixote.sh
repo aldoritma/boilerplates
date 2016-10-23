@@ -7,6 +7,13 @@
 BUILDDIR="build"
 DISTDIR="dist"
 
+Initial_commit()
+{
+  git init
+  git add .
+  git commit -m "initial commit"
+}
+
 Install_bootsrap()
 {
   bower install bootstrap-sass --save
@@ -62,24 +69,25 @@ Create_boilerplates()
     mkdir -p $DISTDIR/assets/{css,scripts,images,fonts}
 
     # installing frameworks
-    # case $3 in
-    #   "bootstrap")
-    #     Install_bootsrap
-    #     ;;
-    #   "foundation")
-    #     Install_foundation
-    #     ;;
-    #   "susy")
-    #     Install_susy
-    #     ;;
-    #   *)
-    #     break
-    #     ;;
-    # esac
+    case $3 in
+      "bootstrap")
+        Install_bootsrap
+        ;;
+      "foundation")
+        Install_foundation
+        ;;
+      "susy")
+        Install_susy
+        ;;
+      *)
+        break
+        ;;
+    esac
 
     touch $BUILDDIR/scss/application.scss
     touch $BUILDDIR/scss/_variables.scss
-    find  $BUILDDIR/scss -type d -exec touch  {}/.gitkeep \;
+    find  $BUILDDIR/{scss,scripts,views} -type d -exec touch  {}/.gitkeep \;
+    find  $DISTDIR/assets/ -type d -exec touch  {}/.gitkeep \;
 
     else
     mkdir assets/{css,scripts,images,fonts}
@@ -99,7 +107,7 @@ read -p "Your Projectname: " projectname
 
 echo "What CSS Pre-Pros do you want to use: "
 PS3="Answer: "
-cssprepros=("sass" "less" "vanilla")
+cssprepros=("sass" "vanilla")
 select opt in "${cssprepros[@]}"
 do
     case $opt in
@@ -118,35 +126,37 @@ do
 done
 
 
-
-echo "What Frameworks do you want to use: "
-PS3="Answer: "
-framework=("bootstrap" "foundation" "none")
-select opt in "${framework[@]}"
-do
-    case $opt in
-        "bootstrap")
-            FRAMEWORKS=$opt
-            break
+if [ "$PREPROS" == "sass" ]; then
+  echo "What Frameworks do you want to use: "
+  PS3="Answer: "
+  framework=("bootstrap" "foundation" "susy" "none")
+  select opt in "${framework[@]}"
+  do
+      case $opt in
+          "bootstrap")
+              FRAMEWORKS=$opt
+              break
+              ;;
+          "foundation")
+              FRAMEWORKS=$opt
+              break
+              ;;
+          "susy")
+              FRAMEWORKS=$opt
+              break
+              ;;
+          "none")
+              FRAMEWORKS=$opt
+              break
+              ;;
+          *)
+            echo "Please choose the options"
             ;;
-        "foundation")
-            FRAMEWORKS=$opt
-            break
-            ;;
-        "susy")
-            FRAMEWORKS=$opt
-            break
-            ;;
-        "none")
-            FRAMEWORKS=$opt
-            break
-            ;;
-        *)
-          echo "Please choose the options"
-          ;;
-    esac
-done
+      esac
+  done
+fi
 
 
 
 Create_boilerplates $projectname $PREPROS $FRAMEWORKS
+Initial_commit
