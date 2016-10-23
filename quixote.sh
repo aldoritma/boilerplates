@@ -3,6 +3,7 @@
 #
 
 
+
 BUILDDIR="build"
 DISTDIR="dist"
 
@@ -33,6 +34,16 @@ Install_susy()
   echo "@import "../vendor/susy/sass/susy"; " > $BUILDDIR/scss/application.scss
 }
 
+bowerrc()
+{
+cat <<EOF >> .bowerrc
+{
+  "directory" : "build/vendor"
+}
+EOF
+}
+
+
 Create_files()
 {
   if [ "$1" == "sass" ]; then
@@ -52,11 +63,7 @@ Create_boilerplates()
   echo ".DS_STORE" > .gitignore
   echo ".codekit-cache/" > .gitignore
   echo $'*.zip\n*.rar\n*.tar.gz\n*.sass-cache' > .gitignore
-  cat <<- _EOF_ ->> .bowerrc
-  {
-    "directory" : "build/vendor"
-  }
-  _EOF_
+  bowerrc
 
 
   if [ "$1" == "sass" ] ; then
@@ -85,8 +92,7 @@ Create_boilerplates()
     touch $BUILDDIR/scss/**/.gitkeep
 
     else
-
-      mkdir assets/{css,scripts,images,fonts}
+    mkdir assets/{css,scripts,images,fonts}
   fi
 }
 
@@ -125,8 +131,6 @@ done
 echo "What Frameworks do you want to use: "
 PS3="Answer: "
 framework=("bootstrap" "foundation" "none")
-
-
 select opt in "${framework[@]}"
 do
     case $opt in
@@ -148,7 +152,7 @@ do
             ;;
         *)
           echo "Please choose the options"
-        ;;
+          ;;
     esac
 done
 
