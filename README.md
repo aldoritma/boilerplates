@@ -6,7 +6,11 @@ a command line for create boilerplates based on NRD FE Guidelines
 ```
 cd
 git clone https://github.com/aldoritma/boilerplates.git boilerplates
-# Base on your profile
+
+# Add persmission to execute
+sudo chmod +x boilerplates/macos/quixote
+
+# Export to path
 echo "export PATH=$PATH:~/boilerplates/macos" > .bash_profile
 
 ```
